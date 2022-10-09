@@ -1,0 +1,26 @@
+[package]
+name = "discordslashbot"
+version = "0.3.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serenity = { version = "0.11.5", default-features = false, features = ["client", "gateway", "rustls_backend", "model"] }
+tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
+reqwest = { version = "0.11.11", features = ["json"] }
+serde = "1.0.144"
+serde_json = "1.0.85"
+serde_derive = "1.0.144"
+dotenv_codegen = "0.15.0"
+poise = "0.3.0"
+#openssl = { version = "0.10", features = ["vendored"] }
+[target.'cfg(linux)'.dependencies]      # Without openssl crosscompiling no longer works for some reason.
+openssl = { version = "0.10", features = ["vendored"] } #turn this on if it does run while cross compiling
+
+[build.env]
+passthrough = [
+    "RUST_BACKTRACE",
+    "RUST_LOG",
+    "TRAVIS",
+]
