@@ -67,8 +67,8 @@ pub async fn coin(
     let response = match coin {
         Coin::Openx => vectorinfo("https://api.dexscreener.com/latest/dex/pairs/optimism/0x23b06d0b8a6c267d8af404cea067f06fa3c6012d").await?,
         Coin::XopenX => vectorinfo("https://api.dexscreener.com/latest/dex/pairs/optimism/0x7ed0ac1dced6da79369ba36c5f48679f2d4daa90").await?,
-        Coin::OP => vectorinfo("https://api.dexscreener.com/latest/dex/pairs/optimism/0x47029bc8f5cbe3b464004e87ef9c9419a48018cd").await?,
-        Coin::Eth => vectorinfo("https://api.dexscreener.com/latest/dex/pairs/optimism/0x85149247691df622eaf1a8bd0cafd40bc45154a9").await?,
+        Coin::OP => vectorinfo("https://api.dexscreener.com/latest/dex/pairs/optimism/0xcdd41009e74bd1ae4f7b2eecf892e4bc718b9302").await?,
+        Coin::Eth => vectorinfo("https://api.dexscreener.com/latest/dex/pairs/optimism/0xc858a329bf053be78d6239c4a4343b8fbd21472b").await?,
         Coin::OpxveVelo => vectorinfoinverseinbase("https://api.dexscreener.com/latest/dex/pairs/optimism/0x946021c382de2aba5c7aba3cb00e67c6e0ffa787").await?,
         Coin::Waru => vectorinfo("https://api.dexscreener.com/latest/dex/pairs/polygon/0x287b27b3008037615e5fe3cacc867c1f9b39c24700020000000000000000083a-0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xe3627374ac4baf5375e79251b0af23afc450fc0e").await?,
     };
