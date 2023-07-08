@@ -3,7 +3,6 @@ A bot that uses the dexscreener api to fetch the price of your favourite tokens 
 
 
 
-[Invite the bot](https://discord.com/api/oauth2/authorize?client_id=1028115574456324146&permissions=2147503104&scope=bot%20applications.commands)
 
 
 This bot is about 20mb of storage when compiled in release mode and requires less than 24mb of allocated RAM with moderate usage.
