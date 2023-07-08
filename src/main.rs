@@ -59,7 +59,6 @@ async fn on_ready(
     Ok(())
 }
 
-#[allow(unused_doc_comments)]
 #[tokio::main]
 async fn main() {
     // Build our client.
