@@ -3,6 +3,7 @@ use serde_derive::Deserialize;
 use serde_json::Value;
 use serenity::utils::Colour;
 
+
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 pub struct L1 {
@@ -124,7 +125,7 @@ pub async fn all(
             .await?;
     } else if markup == Some(Markup::Telegram) {
         let msg = reply.into_message().await?;
-        msg.delete(ctx.discord()).await?;
+        msg.delete(ctx).await?;
         ctx.say(format!("Token | Price | Change\n{} | {} | {}\n{} | {} | {}\n{} | {} | {}\n{} | {} | {}\n{} | {}", openx.name, openx.usd, openx.change, xopenx.name, xopenx.usd, xopenx.change, op.name, op.usd, op.change, eth.name, eth.usd, eth.change,/* waru.name, waru.usd, waru.change,*/ opxvevelo.usd, opxvevelo.change)).await?;
     } else {
         reply

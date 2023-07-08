@@ -70,12 +70,13 @@ async fn main() {
             commands: vec![
                 commands::priceinfo::address_search(),
                 commands::coin::coin(),
+                commands::price::price(),
                 commands::help::help(),
                 commands::all::all(), //commands::registration::register(),
             ],
             ..Default::default()
         })
-        .user_data_setup(|ctx, ready, framework| Box::pin(on_ready(ctx, ready, framework)))
+        .setup(|ctx, ready, framework| Box::pin(on_ready(ctx, ready, framework)))
         .build()
         .await
         .expect("Error creating client");
