@@ -68,11 +68,11 @@ async fn main() {
         .intents(serenity::GatewayIntents::empty())
         .options(poise::FrameworkOptions {
             commands: vec![
-                commands::priceinfo::address_search(),
-                commands::coin::coin(),
+                //commands::priceinfo::address_search(),
+                //commands::coin::coin(),
                 commands::price::price(),
-                commands::help::help(),
-                commands::all::all(), //commands::registration::register(),
+                //commands::help::help(),
+                //commands::all::all(), //commands::registration::register(),
             ],
             ..Default::default()
         })
