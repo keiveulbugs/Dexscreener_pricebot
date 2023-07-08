@@ -3,7 +3,6 @@ use serde_derive::Deserialize;
 use serde_json::Value;
 use serenity::utils::Colour;
 
-
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 pub struct L1 {

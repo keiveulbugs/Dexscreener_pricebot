@@ -14,7 +14,6 @@ serde_json = "1.0.85"
 serde_derive = "1.0.144"
 dotenv_codegen = "0.15.0"
 poise = "0.5.5"
-random_word = { version = "0.4.1", features = ["en"] }
 [target.'cfg(unix)'.dependencies]
 openssl = { version = "0.10.55", features = ["vendored"] }
 
