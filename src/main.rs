@@ -9,7 +9,8 @@ extern crate dotenv_codegen;
 
 //Constants
 // Your Bot token
-const DISCORD_TOKEN: &str = dotenv!("DISCORD_TOKEN");
+// You can still enable this as a constant by uncommenting below, but I switched to using environmentvariables for the discord token
+//const DISCORD_TOKEN: &str = dotenv!("DISCORD_TOKEN");
 // If you want to have commands specific to only a specific guild, set this as your guild_id.
 const PRIVATEGUILDID: serenity::GuildId = serenity::GuildId(1014660478351454299);
 
@@ -62,15 +63,18 @@ async fn on_ready(
 #[tokio::main]
 async fn main() {
     // Build our client.
+    let discord_token = std::env::var("DEXSCREENER_DISCORD_TOKEN").expect("rip no token available in environment varibles.");
+
     let client = poise::Framework::builder()
-        .token(DISCORD_TOKEN)
+        .token(discord_token)
         .intents(serenity::GatewayIntents::empty())
         .options(poise::FrameworkOptions {
             commands: vec![
                 //commands::priceinfo::address_search(),
                 //commands::coin::coin(),
                 commands::price::price(),
-                //commands::help::help(),
+            //    / commands::pricenickname::pricenickname(),
+                // commands::help::help(),
                 //commands::all::all(), //commands::registration::register(),
             ],
             ..Default::default()
