@@ -16,3 +16,10 @@ jobs:
     - uses: pguyot/arm-runner-action@v2
     - name: Build
       run: cargo build --release
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Binary
+        path: |
+          ${{ steps.compile.outputs.BUILT_ARCHIVE }}
+          ${{ steps.compile.outputs.BUILT_CHECKSUM }}
