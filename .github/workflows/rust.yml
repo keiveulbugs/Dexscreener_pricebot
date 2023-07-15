@@ -16,8 +16,8 @@ jobs:
     - uses: pguyot/arm-runner-action@v2
     - name: Build
       id: compile
-      run: cargo build --release > path/to/artifact/discordbot
+      run: cargo build --release > discordbot
     - uses: actions/upload-artifact@v3
       with:
          name: Discordbotartifact
-         path: path/to/artifact/discordbot
+         path: discordbot
