@@ -1,5 +1,5 @@
 # WARNING:
-This bot uses a very old version of poise. I will rewriting it hopefully soon and also make it beter. Include error handling and such.
+This bot uses a old version of poise. I will rewriting it hopefully soon and also make it beter. Include error handling and such.
 
 
 
