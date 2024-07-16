@@ -3,6 +3,7 @@
 
 ## Features
 **Default:** This is a simple pricebot where you can get the price of the hardcoded coins in `pricewithoutdb.rs`. You can change the hashmap to include more or different coins/tokens. When users enter a symbol that is not in there, they will get the option to fetch it manually with a modal.
+
 **Database:** This allows a lot more customization. It has the following features:
 - Store coins/tokens in a database to show as autocomplete suggestions (todo: implement adding the token/coins)
 - Turn on and off commands visible in a guild/server
