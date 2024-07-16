@@ -18,3 +18,12 @@ Both cases, run can be changed to build to create a binary.
 
 The bot will ask on startup the bot secret, but you can also set it using a `.env` with `DEXSCREENER_BOT` as variable name.
 
+
+## Good to know
+- The bot will take the pair with the most volume based on the smart contract address of a token
+- The bot was written in a single evening, so don't get your hopes up.
+- Clippy is set to pedantic to avoid bad code. But it whines about everything, so have allowed quite a bit (i.e. struct names being too similar to filenames)
+- I haven't run the bot in production yet, but am confident that it will run better than the previous one.
+- All rights are reserved to Dexscreener.com
+
+
