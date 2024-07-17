@@ -17,7 +17,7 @@ struct Coins {
 }
 
 #[derive(Debug, Modal, Clone)]
-#[name = "Collection naming"]
+#[name = "Custom Token"]
 struct CustomToken {
     #[name = "Enter address of the token"] // Field name by default
     #[placeholder = "0x....."] // No placeholder by default

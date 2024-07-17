@@ -158,7 +158,9 @@ pub async fn settings(ctx: Context<'_>) -> Result<(), Error> {
         "owneravailablecommands" => {
             crate::settings::owneravailablecommands::ownercheckavailablecommands(ctx).await?;
         }
-        "tokenpricetracking" => {}
+        "tokenpricetracking" => {
+            crate::commands::addtoken::addtoken(ctx, interaction).await?;
+        }
         _ => {
             return Err(format!(
                 "There is no implementation available for this setting: {interactionvalue}."
