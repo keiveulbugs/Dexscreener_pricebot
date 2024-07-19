@@ -1,6 +1,8 @@
+use crate::commands::price::Coins;
 use crate::{Context, Data, Error, DB};
 use poise::{CreateReply, Modal};
 use serde::{Deserialize, Serialize};
+use serenity::all::GuildId;
 use serenity::{
     all::{CreateActionRow, CreateButton, CreateEmbed},
     model::application::ComponentInteraction,
@@ -19,7 +21,13 @@ struct AddToken {
     logo: Option<String>,
 }
 
-pub async fn addtoken(ctx: Context<'_>, interaction: ComponentInteraction) -> Result<(), Error> {
+#[allow(clippy::too_many_lines)]
+pub async fn addtoken(
+    ctx: Context<'_>,
+    interaction: ComponentInteraction,
+    guildid: GuildId,
+    globaltokenpermission: bool,
+) -> Result<(), Error> {
     let modalresponse = match poise::execute_modal_on_component_interaction::<AddToken>(
         ctx.serenity_context(),
         interaction,
@@ -46,8 +54,8 @@ pub async fn addtoken(ctx: Context<'_>, interaction: ComponentInteraction) -> Re
 
     let mut embed = CreateEmbed::default()
         .title("Check if the following information is correct:")
-        .field("Symbol", basetoken.symbol, false)
-        .field("Address", basetoken.address, false);
+        .field("Symbol", basetoken.symbol.clone(), false)
+        .field("Address", basetoken.address.clone(), false);
 
     if let Some(logourl) = modalresponse.logo {
         embed = embed.thumbnail(logourl);
@@ -60,32 +68,68 @@ pub async fn addtoken(ctx: Context<'_>, interaction: ComponentInteraction) -> Re
     let globalbutton = CreateButton::new(globalbuttonid.clone())
         .label("Add token in all servers")
         .style(serenity::all::ButtonStyle::Danger);
-    let actionrow = CreateActionRow::Buttons(vec![guildbutton, globalbutton]);
-    ctx.send(
-        CreateReply::default()
-            .embed(embed)
-            .components(vec![actionrow])
-            .ephemeral(true),
-    )
-    .await?;
+    let actionrow = CreateActionRow::Buttons(vec![guildbutton.clone(), globalbutton.clone()]);
+    let reply = CreateReply::default()
+        .embed(embed)
+        .components(vec![actionrow])
+        .ephemeral(true);
+    let replyhandle = ctx.send(reply.clone()).await?;
 
-    while let Some(mci) = poise::serenity_prelude::ComponentInteractionCollector::new(ctx)
+    let message = match replyhandle.clone().into_message().await {
+        Ok(message) => message,
+        Err(_) => {
+            replyhandle
+                .edit(
+                    ctx,
+                    reply.components(vec![CreateActionRow::Buttons(vec![
+                        guildbutton,
+                        globalbutton,
+                    ])]),
+                )
+                .await?;
+            return Ok(());
+        }
+    };
+    match message
+        .await_component_interaction(&ctx.serenity_context().shard)
+        .timeout(std::time::Duration::from_secs(60 * 2))
         .author_id(ctx.author().id)
-        .channel_id(ctx.channel_id())
-        .timeout(std::time::Duration::from_secs(120))
-        // .filter(move |mci| {
-        //     mci.data.custom_id == guildbuttonid.to_string()
-        //         || mci.data.custom_id == globalbuttonid.to_string()
-        // })
+        .custom_ids(vec![guildbuttonid.clone(), globalbuttonid.clone()])
         .await
     {
-        let mut msg = mci.message.clone();
+        Some(val) => {
+            if !globaltokenpermission && val.data.custom_id.eq(&globalbuttonid) {
+                ctx.send(
+                    CreateReply::default()
+                        .content("This guild does not have the permission to set coins globally"),
+                )
+                .await?;
+                return Ok(());
+            }
 
-        mci.create_response(
-            ctx,
-            poise::serenity_prelude::CreateInteractionResponse::Acknowledge,
-        )
-        .await?;
+            let dbresult: Option<Coins> = DB
+                .create(("Coins", basetoken.symbol.clone()))
+                .content(Coins {
+                    name: basetoken.symbol,
+                    address: basetoken.address,
+                    guildid,
+                    global: val.data.custom_id.eq(&globalbuttonid),
+                })
+                .await?;
+            message.delete(ctx).await?;
+        }
+        None => {
+            replyhandle
+                .edit(
+                    ctx,
+                    reply.components(vec![CreateActionRow::Buttons(vec![
+                        guildbutton.disabled(true),
+                        globalbutton.disabled(true),
+                    ])]),
+                )
+                .await?;
+            return Ok(());
+        }
     }
 
     Ok(())

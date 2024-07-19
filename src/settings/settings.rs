@@ -7,6 +7,7 @@ use poise::serenity_prelude::{
 use poise::CreateReply;
 use serde::{Deserialize, Serialize};
 
+#[allow(clippy::struct_excessive_bools)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AvailableSettings {
     // Ability to change which commands are available in a guild
@@ -15,8 +16,9 @@ pub struct AvailableSettings {
     owneravailablecommands: bool,
     // Ability to change which tokens are being tracked in price tracking
     tokenpricetracking: bool,
+    // Ability to set tokens globally
+    globaltokens: bool,
 }
-
 /// Change settings depending on your server
 //
 // 1. Check for Admins or Owners
@@ -77,6 +79,7 @@ pub async fn settings(ctx: Context<'_>) -> Result<(), Error> {
             availablecommands: true,
             owneravailablecommands: false,
             tokenpricetracking: false,
+            globaltokens: false,
         },
     };
     if ownercheck {
@@ -84,6 +87,7 @@ pub async fn settings(ctx: Context<'_>) -> Result<(), Error> {
             availablecommands: true,
             owneravailablecommands: true,
             tokenpricetracking: true,
+            globaltokens: true,
         }
     };
 
@@ -159,7 +163,13 @@ pub async fn settings(ctx: Context<'_>) -> Result<(), Error> {
             crate::settings::owneravailablecommands::ownercheckavailablecommands(ctx).await?;
         }
         "tokenpricetracking" => {
-            crate::commands::addtoken::addtoken(ctx, interaction).await?;
+            crate::commands::addtoken::addtoken(
+                ctx,
+                interaction,
+                guildid,
+                commandpermissions.globaltokens,
+            )
+            .await?;
         }
         _ => {
             return Err(format!(

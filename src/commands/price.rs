@@ -7,13 +7,16 @@ use futures::{Stream, StreamExt};
 use poise::CreateReply;
 use poise::Modal;
 use serde::{Deserialize, Serialize};
+use serenity::all::GuildId;
 use serenity::all::{CreateEmbed, CreateEmbedAuthor, CreateEmbedFooter};
 use serenity::model::Colour;
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Coins {
-    name: String,
-    address: String,
+pub struct Coins {
+    pub name: String,
+    pub address: String,
+    pub guildid: GuildId,
+    pub global: bool,
 }
 
 #[derive(Debug, Modal, Clone)]
@@ -110,7 +113,6 @@ pub async fn price(
         .colour(colour);
 
     ctx.send(CreateReply::default().embed(embed)).await?;
-
     Ok(())
 }
 
