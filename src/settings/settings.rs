@@ -1,5 +1,6 @@
 #![cfg(feature = "database")]
 #![allow(clippy::module_name_repetitions)]
+use crate::settings::commonfunctions::{admincheck, getguildid, ownercheck};
 use crate::settings::dbstructs::AvailableSettings;
 use crate::{Context, Error, DB};
 use poise::serenity_prelude::{
@@ -19,12 +20,8 @@ use serenity::all::CacheHttp;
 #[allow(clippy::too_many_lines)]
 #[poise::command(slash_command)]
 pub async fn settings(ctx: Context<'_>) -> Result<(), Error> {
-    let ownercheck = ctx.framework().options.owners.contains(&ctx.author().id);
-    let admincheck = ctx
-        .author_member()
-        .await
-        .and_then(|m| m.permissions)
-        .is_some_and(poise::serenity_prelude::Permissions::administrator);
+    let admincheck = admincheck(ctx, None).await?;
+    let ownercheck = ownercheck(ctx, None).await?;
 
     // Check if the author is the bot owner or an admin of that server.
     if !admincheck && !ownercheck {
@@ -47,18 +44,7 @@ pub async fn settings(ctx: Context<'_>) -> Result<(), Error> {
     )
     .await?;
 
-    let guildid = match ctx.guild_id() {
-        Some(guildid) => guildid,
-        None => {
-            ctx.send(
-                CreateReply::new()
-                    .content("It looks you are not in a server")
-                    .ephemeral(true),
-            )
-            .await?;
-            return Ok(());
-        }
-    };
+    let guildid = getguildid(ctx).await?;
 
     let dbcommandpermissions: Option<AvailableSettings> = DB
         .select(("availablesettings", guildid.to_string()))
