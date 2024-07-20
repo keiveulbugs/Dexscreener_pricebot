@@ -27,6 +27,7 @@ struct CustomToken {
 }
 // No fucking clue why clippy whines about this
 #[allow(clippy::unused_async)]
+#[allow(dead_code)] // this code is not dead
 async fn autocomplete_name<'a>(
     _ctx: Context<'_>,
     partial: &'a str,

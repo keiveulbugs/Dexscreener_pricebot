@@ -6,7 +6,6 @@ use poise::serenity_prelude::CreateSelectMenu;
 use poise::serenity_prelude::CreateSelectMenuKind;
 use poise::serenity_prelude::CreateSelectMenuOption;
 use poise::CreateReply;
-use serenity::all::GuildId;
 
 use super::commonfunctions::getguildid;
 

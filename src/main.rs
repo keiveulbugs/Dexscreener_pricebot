@@ -10,7 +10,6 @@
     clippy::module_inception
 )]
 use macro_env::envseeker;
-use serde::{Deserialize, Serialize};
 
 use poise::serenity_prelude as serenity;
 use poise::serenity_prelude::CacheHttp;
@@ -48,7 +47,7 @@ static DB: Lazy<Surreal<Db>> = Lazy::new(Surreal::init);
 /// Bot owners can turn off which commands are available in a server.
 async fn on_ready(
     ctx: &serenity::prelude::Context,
-    ready: &serenity::Ready,
+    _ready: &serenity::Ready,
     framework: &poise::Framework<Data, Error>,
 ) -> Result<(), Error> {
     // Get all available commands in framework

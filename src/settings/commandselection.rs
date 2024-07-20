@@ -7,7 +7,6 @@ use poise::serenity_prelude::{
     CreateEmbed, CreateMessage, CreateSelectMenu, CreateSelectMenuKind, CreateSelectMenuOption,
 };
 use poise::CreateReply;
-use serde::{Deserialize, Serialize};
 use serenity::all::GuildId;
 
 use super::commonfunctions::ownercheck;

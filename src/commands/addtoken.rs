@@ -1,6 +1,6 @@
 #![cfg(feature = "database")]
 use crate::commands::price::Coins;
-use crate::{Context, Data, Error, DB};
+use crate::{Context, Error, DB};
 use poise::{CreateReply, Modal};
 use serde::{Deserialize, Serialize};
 use serenity::all::GuildId;
@@ -108,7 +108,7 @@ pub async fn addtoken(
                 return Ok(());
             }
 
-            let dbresult: Option<Coins> = DB
+            let _: Option<Coins> = DB
                 .create(("Coins", basetoken.symbol.clone()))
                 .content(Coins {
                     name: basetoken.symbol,

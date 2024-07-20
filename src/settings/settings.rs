@@ -6,9 +6,7 @@ use crate::{Context, Error, DB};
 use poise::serenity_prelude::{
     CreateMessage, CreateSelectMenu, CreateSelectMenuKind, CreateSelectMenuOption,
 };
-use poise::{reply, CreateReply, ReplyHandle};
-use serde::{Deserialize, Serialize};
-use serenity::all::CacheHttp;
+use poise::CreateReply;
 
 /// Change settings depending on your server
 //
