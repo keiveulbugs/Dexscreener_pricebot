@@ -12,7 +12,6 @@ use super::commonfunctions::ownercheck;
 /// Check if the owner invokes this command as he can make slash commands available for guilds
 pub async fn ownercheckavailablecommands(ctx: Context<'_>) -> Result<(), Error> {
     if !ownercheck(ctx, Some("You are not the bot owner!")).await? {
-        // This is probably not needed as ownercheck Errors when you are not the owner. And thus returning early from the function.
         return Ok(());
     }
     let guildtobechanged = guildselectmenu(ctx).await?;
@@ -28,7 +27,7 @@ pub struct AvailableSlashcommands {
     guildid: GuildId,
 }
 
-/// Set commands to be available in a guild to turn on or off. Only available by owners.
+/// Set commands to be available in a guild to turn on or off. Only available for owners.
 async fn availablecommandselection(ctx: Context<'_>, guildid: GuildId) -> Result<(), Error> {
     // Check which commands are available in a guild to be turned on
     let availablecommands =
@@ -129,8 +128,6 @@ async fn availablecommandselection(ctx: Context<'_>, guildid: GuildId) -> Result
             commandsforembed.push((command, String::new(), false));
         }
     }
-
-    // Send this embed
     let embed = CreateEmbed::new()
         .fields(commandsforembed)
         .description(format!(

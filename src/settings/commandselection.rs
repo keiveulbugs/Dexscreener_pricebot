@@ -10,10 +10,13 @@ use poise::CreateReply;
 use serde::{Deserialize, Serialize};
 use serenity::all::GuildId;
 
+use super::commonfunctions::ownercheck;
+
 /// Check if the owner invokes this command as he can turn on slash commands across guilds
+/// After this go to guildstobechanged
 pub async fn ownercheckcommandselection(ctx: Context<'_>) -> Result<(), Error> {
     // If you are not bot owner continue like normal in your current guild
-    let ownercheck = ctx.framework().options.owners.contains(&ctx.author().id);
+    let ownercheck = ownercheck(ctx, None).await?;
     if !ownercheck {
         let guildid = match ctx.guild_id() {
             Some(guildid) => guildid,
@@ -27,11 +30,12 @@ pub async fn ownercheckcommandselection(ctx: Context<'_>) -> Result<(), Error> {
                 return Ok(());
             }
         };
+        // Invoke command selection if you are not the owner
         commandselection(ctx, guildid).await?;
         // Return the function as completed
         return Ok(());
     }
-
+    // From here on it continues only for owners
     let guilds = ctx.http().get_guilds(None, None).await?;
     let mut vecofguildmenu = vec![];
     for guild in guilds {
@@ -90,6 +94,8 @@ pub async fn ownercheckcommandselection(ctx: Context<'_>) -> Result<(), Error> {
     };
 
     let guildtobechanged = GuildId::new(interactionvalue.parse::<u64>()?);
+
+    // Invoke commandselection if you are the owner
     commandselection(ctx, guildtobechanged).await?;
 
     Ok(())
