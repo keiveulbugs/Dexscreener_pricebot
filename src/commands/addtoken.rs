@@ -1,3 +1,4 @@
+#![cfg(feature = "database")]
 use crate::commands::price::Coins;
 use crate::{Context, Data, Error, DB};
 use poise::{CreateReply, Modal};

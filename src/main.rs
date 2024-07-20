@@ -29,6 +29,8 @@ type Context<'a> = poise::Context<'a, Data, Error>;
 pub struct Data {}
 
 #[cfg(feature = "database")]
+use crate::settings::dbstructs::GuildCommands;
+#[cfg(feature = "database")]
 use ::{
     once_cell::sync::Lazy,
     surrealdb::{
@@ -36,15 +38,9 @@ use ::{
         Surreal,
     },
 };
-#[cfg(feature = "database")]
-static DB: Lazy<Surreal<Db>> = Lazy::new(Surreal::init);
 
 #[cfg(feature = "database")]
-#[derive(Debug, Serialize, Deserialize)]
-pub struct GuildCommands {
-    pub guild: poise::serenity_prelude::GuildId,
-    pub commands: Vec<String>,
-}
+static DB: Lazy<Surreal<Db>> = Lazy::new(Surreal::init);
 
 /// Register the specific commands for every guild.
 /// The default is registering all commands.

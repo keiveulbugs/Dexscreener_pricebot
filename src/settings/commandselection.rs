@@ -1,6 +1,8 @@
 #![cfg(feature = "database")]
-use crate::GuildCommands;
-use crate::{Context, Error, DB};
+use crate::{
+    settings::dbstructs::{AvailableSlashcommands, GuildCommands},
+    Context, Error, DB,
+};
 use poise::serenity_prelude::{
     CreateEmbed, CreateMessage, CreateSelectMenu, CreateSelectMenuKind, CreateSelectMenuOption,
 };
@@ -91,12 +93,6 @@ pub async fn ownercheckcommandselection(ctx: Context<'_>) -> Result<(), Error> {
     commandselection(ctx, guildtobechanged).await?;
 
     Ok(())
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct AvailableSlashcommands {
-    pub availableslashcommands: Vec<String>,
-    pub guildid: GuildId,
 }
 
 /// Check which commands are available in a guild to be turned on
@@ -244,7 +240,7 @@ async fn commandselection(ctx: Context<'_>, guildid: GuildId) -> Result<(), Erro
     let _: Option<GuildCommands> = DB
         .update(("guildcommands", guildid.to_string()))
         .content(GuildCommands {
-            guild: guildid,
+            guildid,
             commands: dbcommands,
         })
         .await?;

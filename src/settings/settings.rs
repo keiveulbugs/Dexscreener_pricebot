@@ -1,29 +1,13 @@
 #![cfg(feature = "database")]
 #![allow(clippy::module_name_repetitions)]
+use crate::settings::dbstructs::AvailableSettings;
 use crate::{Context, Error, DB};
 use poise::serenity_prelude::{
     CreateMessage, CreateSelectMenu, CreateSelectMenuKind, CreateSelectMenuOption,
 };
-use poise::CreateReply;
+use poise::{reply, CreateReply, ReplyHandle};
 use serde::{Deserialize, Serialize};
-
-/// Which settings someone can change in the bot.
-/// - `availablecommands`: Turn on and off which commands are visible for users in a guild
-/// - `owneravailablecommands`: Change which commands are available to turn on for `availablecommands`
-/// - `tokenpricetracking`: Allow adding tokens to `/price`-autocomplete through settings
-/// - `globaltoken`: Allow tokens added through `tokenpricetracking` to be available in all guilds
-#[allow(clippy::struct_excessive_bools)]
-#[derive(Debug, Serialize, Deserialize)]
-pub struct AvailableSettings {
-    // Ability to change which commands are available in a guild
-    availablecommands: bool,
-    // Ability to change which commands are available in `availablecommands` (should be only owners of the bot)
-    owneravailablecommands: bool,
-    // Ability to change which tokens are being tracked in price tracking
-    tokenpricetracking: bool,
-    // Ability to set tokens globally
-    globaltokens: bool,
-}
+use serenity::all::CacheHttp;
 /// Change settings depending on your server
 //
 // 1. Check for Admins or Owners
