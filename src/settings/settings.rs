@@ -54,7 +54,7 @@ pub async fn settings(ctx: Context<'_>) -> Result<(), Error> {
         None => AvailableSettings {
             availablecommands: true,
             owneravailablecommands: false,
-            tokenpricetracking: false,
+            tokenpricetracking: true,
             globaltokens: false,
         },
     };
@@ -75,16 +75,22 @@ pub async fn settings(ctx: Context<'_>) -> Result<(), Error> {
             "availablecommands",
         ));
     }
+    if commandpermissions.tokenpricetracking {
+        selectmenuvec.push(CreateSelectMenuOption::new(
+            "Add a token of which the price can be fetched",
+            "tokenpricetracking",
+        ));
+    }
     if commandpermissions.owneravailablecommands {
         selectmenuvec.push(CreateSelectMenuOption::new(
             "(De)Activate commands available to turn on for guilds",
             "owneravailablecommands",
         ));
     }
-    if commandpermissions.tokenpricetracking {
+    if commandpermissions.owneravailablecommands {
         selectmenuvec.push(CreateSelectMenuOption::new(
-            "Add a token of which the price can be fetched",
-            "tokenpricetracking",
+            "Change the permissions a user has",
+            "permissionsettings",
         ));
     }
 
@@ -146,6 +152,9 @@ pub async fn settings(ctx: Context<'_>) -> Result<(), Error> {
                 commandpermissions.globaltokens,
             )
             .await?;
+        }
+        "permissionsettings" => {
+            crate::settings::permissionsettings::permissionsettings(ctx).await?;
         }
         _ => {
             return Err(format!(

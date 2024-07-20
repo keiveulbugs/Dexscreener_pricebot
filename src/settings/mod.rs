@@ -3,4 +3,5 @@ pub mod commandselection;
 pub mod commonfunctions;
 pub mod dbstructs;
 pub mod owneravailablecommands;
+pub mod permissionsettings;
 pub mod settings;
