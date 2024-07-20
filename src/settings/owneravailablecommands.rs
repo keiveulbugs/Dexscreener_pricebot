@@ -7,85 +7,14 @@ use poise::CreateReply;
 use serde::{Deserialize, Serialize};
 use serenity::all::GuildId;
 
+use super::commonfunctions::ownercheck;
+
 /// Check if the owner invokes this command as he can make slash commands available for guilds
 pub async fn ownercheckavailablecommands(ctx: Context<'_>) -> Result<(), Error> {
-    let ownercheck = ctx.framework().options.owners.contains(&ctx.author().id);
-    // If you are not bot owner, abort
-    if !ownercheck {
-        match ctx.send(
-            CreateReply::new()
-                .content("You are not the bot owner!")
-                .ephemeral(true),
-        )
-        .await {
-            Ok(botownercheckmessage) => botownercheckmessage,
-            Err(botownercheckerror) => return Err(format!("Person is not the bot owner, however, this message could not be send to them.\nError: {botownercheckerror}").into())
-        };
+    if !ownercheck(ctx, Some("You are not the bot owner!".to_string())).await? {
         return Ok(());
     }
-
-    let guilds = match ctx.http().get_guilds(None, None).await {
-        Ok(guildsfetch) => guildsfetch,
-        Err(errorguildsfetch) => {
-            return Err(
-                format!("The bot was not able to get the guilds: {errorguildsfetch}").into(),
-            )
-        }
-    };
-    let mut vecofguildmenu = vec![];
-    for guild in guilds {
-        vecofguildmenu.push(CreateSelectMenuOption::new(
-            guild.name,
-            guild.id.to_string(),
-        ));
-    }
-
-    let customid = format!("guildmenu{}", ctx.id());
-    let message = ctx
-        .channel_id()
-        .send_message(
-            ctx,
-            CreateMessage::new()
-                .content("Please click the guild you want to change")
-                .select_menu(
-                    CreateSelectMenu::new(
-                        customid.clone(),
-                        CreateSelectMenuKind::String {
-                            options: vecofguildmenu,
-                        },
-                    )
-                    .max_values(1)
-                    .placeholder("No guild chosen"),
-                ),
-        )
-        .await?;
-    let Some(interaction) = message
-        .await_component_interaction(&ctx.serenity_context().shard)
-        .timeout(std::time::Duration::from_secs(60 * 3))
-        .author_id(ctx.author().id)
-        .custom_ids(vec![customid])
-        .await
-    else {
-        message.delete(&ctx).await?;
-        ctx.send(
-            CreateReply::new()
-                .content("Command settings timed ou:/")
-                .ephemeral(true),
-        )
-        .await?;
-        return Ok(());
-    };
-
-    message.delete(ctx).await?;
-
-    let interactionvalue = match &interaction.data.kind {
-        poise::serenity_prelude::ComponentInteractionDataKind::StringSelect { values } => {
-            &values[0]
-        }
-        _ => panic!("unexpected interaction data kind"),
-    };
-
-    let guildtobechanged = GuildId::new(interactionvalue.parse::<u64>()?);
+    let guildtobechanged = guildselectmenu(ctx).await?;
 
     availablecommandselection(ctx, guildtobechanged).await?;
 
@@ -210,4 +139,72 @@ async fn availablecommandselection(ctx: Context<'_>, guildid: GuildId) -> Result
         .await?;
 
     Ok(())
+}
+
+/// Create a select menu including all guilds.
+/// The user can choose one guild of which the guildid is returned.
+pub async fn guildselectmenu(ctx: Context<'_>) -> Result<GuildId, Error> {
+    let guilds = match ctx.http().get_guilds(None, None).await {
+        Ok(guildsfetch) => guildsfetch,
+        Err(errorguildsfetch) => {
+            return Err(
+                format!("The bot was not able to get the guilds: {errorguildsfetch}").into(),
+            )
+        }
+    };
+    let mut vecofguildmenu = vec![];
+    for guild in guilds {
+        vecofguildmenu.push(CreateSelectMenuOption::new(
+            guild.name,
+            guild.id.to_string(),
+        ));
+    }
+
+    let customid = format!("guildmenu{}", ctx.id());
+    let message = ctx
+        .channel_id()
+        .send_message(
+            ctx,
+            CreateMessage::new()
+                .content("Please click the guild you want to change")
+                .select_menu(
+                    CreateSelectMenu::new(
+                        customid.clone(),
+                        CreateSelectMenuKind::String {
+                            options: vecofguildmenu,
+                        },
+                    )
+                    .max_values(1)
+                    .placeholder("No guild chosen"),
+                ),
+        )
+        .await?;
+    let Some(interaction) = message
+        .await_component_interaction(&ctx.serenity_context().shard)
+        .timeout(std::time::Duration::from_secs(60 * 3))
+        .author_id(ctx.author().id)
+        .custom_ids(vec![customid])
+        .await
+    else {
+        message.delete(&ctx).await?;
+        ctx.send(
+            CreateReply::new()
+                .content("Command settings timed out:/")
+                .ephemeral(true),
+        )
+        .await?;
+        return Err("Command settings timed out:/".into());
+    };
+
+    message.delete(ctx).await?;
+
+    let interactionvalue = match &interaction.data.kind {
+        poise::serenity_prelude::ComponentInteractionDataKind::StringSelect { values } => {
+            &values[0]
+        }
+        _ => panic!("unexpected interaction data kind"),
+    };
+
+    let guildtobechanged = GuildId::new(interactionvalue.parse::<u64>()?);
+    Ok(guildtobechanged)
 }
