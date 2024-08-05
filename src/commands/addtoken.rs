@@ -29,6 +29,7 @@ pub async fn addtoken(
     guildid: GuildId,
     globaltokenpermission: bool,
 ) -> Result<(), Error> {
+    println!("Trying to open modal");
     let modalresponse = match poise::execute_modal_on_component_interaction::<AddToken>(
         ctx.serenity_context(),
         interaction,

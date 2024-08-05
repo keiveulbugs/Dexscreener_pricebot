@@ -30,3 +30,6 @@ The bot will ask on startup the bot secret, but you can also set it using a `.en
 - All rights are reserved to Dexscreener.com
 
 
+# ToDo
+- [ ] Automatically register commands when the bot joins a new guild.
+- [ ] Make an owner command that allows setting tokens from a guild global or private
