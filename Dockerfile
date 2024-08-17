@@ -5,7 +5,7 @@ RUN set -eux; \
     apt-get install -y --no-install-recommends \
         libclang-dev
 
-WORKDIR /dexscreener
+WORKDIR /usr/src/dexscreener-pricebot-v2
 
 # Copy the Cargo.toml and Cargo.lock files
 COPY Cargo.toml Cargo.lock ./
@@ -19,4 +19,4 @@ COPY README.md ./README.md
 
 RUN cargo install --features "database" --path .
 
-CMD ["dexscreener"]
+CMD ["dexscreener-pricebot-v2"]
