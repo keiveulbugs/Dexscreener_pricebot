@@ -112,7 +112,8 @@ fn specificcommandfinder(
 #[tokio::main]
 async fn main() {
     #[cfg(all(feature = "memdatabase", feature = "filedatabase"))]
-    //compile_error!("Choose one of the features [memdatabase or filedatabase]. Can not determine which one to use when both are supplied.");
+    compile_error!("Choose one of the features [memdatabase or filedatabase]. Can not determine which one to use when both are supplied.");
+
     #[cfg(feature = "database")]
     createdatabase().await;
 
@@ -194,9 +195,9 @@ cfg_if::cfg_if! {
     } else if #[cfg(feature = "database")]{
 
         async fn connectdatabase() {
-            let remoteaddress = match std::env::var("SURREALDB") {
-                Some(val) => {val},
-                None => {"ws://localhost:8000"}
+            let remoteaddress = match std::env::var("SURREAL_BIND") {
+                Ok(val) => val,
+                Err(_) => "ws://localhost:8000".to_string()
             };
             println!("Connecting to a database on address: {remoteaddress}");
             match DB.connect("remoteaddress").await {

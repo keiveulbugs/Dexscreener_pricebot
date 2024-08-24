@@ -28,5 +28,3 @@ cfg-if = "1.0.0"
 database = ["dep:surrealdb", "surrealdb?/kv-rocksdb", "surrealdb?/kv-mem"]
 memdatabase = ["surrealdb/kv-mem", "database"]
 filedatabase = ["surrealdb/kv-rocksdb", "database"]
-# Not necessarily needed, remote is the default behaviour
-remotedatabase = ["database"]
