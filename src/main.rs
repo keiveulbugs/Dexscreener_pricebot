@@ -31,15 +31,12 @@ pub struct Data {}
 use crate::settings::dbstructs::GuildCommands;
 #[cfg(feature = "database")]
 use ::{
-    once_cell::sync::Lazy,
-    surrealdb::{
-        engine::local::{Db, File},
-        Surreal,
-    },
+    once_cell::sync::Lazy, surrealdb::engine::any, surrealdb::engine::remote::ws::Wss,
+    surrealdb::Surreal,
 };
 
 #[cfg(feature = "database")]
-static DB: Lazy<Surreal<Db>> = Lazy::new(Surreal::init);
+static DB: Lazy<Surreal<any::Any>> = Lazy::new(Surreal::init);
 
 /// Register the specific commands for every guild.
 /// The default is registering all commands.
@@ -114,6 +111,8 @@ fn specificcommandfinder(
 
 #[tokio::main]
 async fn main() {
+    #[cfg(all(feature = "memdatabase", feature = "filedatabase"))]
+    //compile_error!("Choose one of the features [memdatabase or filedatabase]. Can not determine which one to use when both are supplied.");
     #[cfg(feature = "database")]
     createdatabase().await;
 
@@ -171,13 +170,40 @@ async fn main() {
 #[cfg(feature = "database")]
 async fn createdatabase() {
     println!("Creating database");
-
-    match DB.connect::<File>("dexscreener.db").await {
-        Ok(val) => val,
-        Err(dbconnecterror) => panic!("failed to connect to database: {dbconnecterror}"),
-    };
+    connectdatabase().await;
     match DB.use_ns("dexscreener").use_db("dexscreenerdb").await {
         Ok(val) => val,
         Err(dberror) => panic!("failed to use namespace or datebase: {dberror}"),
     };
+}
+
+cfg_if::cfg_if! {
+    if #[cfg(feature = "memdatabase")] {
+        async fn connectdatabase() {         match DB.connect("mem://").await {
+            Ok(val) => val,
+            Err(dbconnecterror) => panic!("failed to connect to database: {dbconnecterror}"),
+        };
+        println!("Created an in memory database");
+    }
+    } else if #[cfg(feature = "filedatabase")] {
+        async fn connectdatabase() {         match DB.connect("file://dexscreener.db").await {
+            Ok(val) => val,
+            Err(dbconnecterror) => panic!("failed to connect to database: {dbconnecterror}"),
+        };
+        println!("Created a file database"); }
+    } else if #[cfg(feature = "database")]{
+
+        async fn connectdatabase() {
+            let remoteaddress = match std::env::var("SURREALDB") {
+                Some(val) => {val},
+                None => {"ws://localhost:8000"}
+            };
+            println!("Connecting to a database on address: {remoteaddress}");
+            match DB.connect("remoteaddress").await {
+            Ok(val) => val,
+            Err(dbconnecterror) => panic!("failed to connect to database: {dbconnecterror}"),
+        };
+        println!("Created a remote database");
+    }
+    }
 }
