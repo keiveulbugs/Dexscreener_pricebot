@@ -197,7 +197,7 @@ cfg_if::cfg_if! {
         async fn connectdatabase() {
             let remoteaddress = match std::env::var("SURREAL_BIND") {
                 Ok(val) => val,
-                Err(_) => "ws://localhost:8000".to_string()
+                Err(_) => "127.0.0.1:8000".to_string()
             };
             println!("Connecting to a database on address: {remoteaddress}");
             match DB.connect("remoteaddress").await {

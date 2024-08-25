@@ -2,8 +2,6 @@
     "rust-analyzer.cargo.features": [
         "memdatabase"
     ],
-    "rust-analyzer.check.features": [
-        "memdatabase"
-    ],
+    "rust-analyzer.check.command": "check",
     "rust-analyzer.cargo.noDefaultFeatures": true
 }
