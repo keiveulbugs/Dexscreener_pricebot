@@ -146,7 +146,6 @@ async fn main() {
             },
         )
         .build();
-
     let mut client = match serenity::ClientBuilder::new(
         // envseeker will try to find the variable in .env, then in system variables and finally will ask you for it if it doesn't find any.
         envseeker(macro_env::SearchType::All, "DEXSCREENER_BOT"),
@@ -196,11 +195,13 @@ cfg_if::cfg_if! {
 
         async fn connectdatabase() {
             let remoteaddress = match std::env::var("SURREAL_BIND") {
-                Ok(val) => val,
-                Err(_) => "127.0.0.1:8000".to_string()
+                Ok(val) => {if !val.starts_with(|x :char| x.is_ascii_digit()) {val} else {
+                    format!("ws://{val}")
+                }},
+                Err(_) => "ws://localhost:8000".to_string()
             };
             println!("Connecting to a database on address: {remoteaddress}");
-            match DB.connect("remoteaddress").await {
+            match DB.connect(remoteaddress).await {
             Ok(val) => val,
             Err(dbconnecterror) => panic!("failed to connect to database: {dbconnecterror}"),
         };
